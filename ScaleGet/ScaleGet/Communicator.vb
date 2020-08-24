@@ -28,19 +28,12 @@ Public Class communicator
         Dim StopByteSize As Integer = Avery.RetrieveStopByte
         Dim CMD As Byte()
         Dim ReadData As String = ""
-        'Dim ActualPacketSize
         Try
             Do Until InStream.Length = StopByteSize
                 If NetworkStream.CanWrite And NetworkStream.CanRead Then
                     CMD = Avery.RetrievePluByte(Count)
+                    ReDim Preserve InStream(TCPClient.ReceiveBufferSize)
                     NetworkStream.Write(CMD, 0, CMD.Length)
-
-                    'ActualPacketSize = TCPClient.Available
-                    'If ActualPacketSize <> 0 Then
-                    '    ReDim Preserve InStream(ActualPacketSize)
-                    'Else
-                    '    Return Datalist
-                    'End If
 
                     NetworkStream.Read(InStream, 0, TCPClient.ReceiveBufferSize)
 
