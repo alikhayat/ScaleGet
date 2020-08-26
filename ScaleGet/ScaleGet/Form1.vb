@@ -9,8 +9,7 @@
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Dim Commu As communicator = New communicator("10.3.5.7", 3001)
-        Dim Data As New List(Of Byte())
-        Data = Commu.InializeComm(ScaleType.Avery)
+        Dim Avery As New AveryRetrieve
+        Avery.RetrieveData("10.3.5.7", "3001", 7)
     End Sub
 End Class

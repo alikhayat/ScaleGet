@@ -24,14 +24,19 @@ Public Class AveryRetrieve
         Return GetP
     End Function
     Public Function RetrieveStopByte() As Integer
-        Return 25
+        Return 16
     End Function
     Public Function RequestStreamSize() As Integer
         Return RequestSize
     End Function
-    Public Sub RetrieveData(ByVal Address As String, ByVal Port As String, ByVal ScaleNo As Int16) As List(Of Int16)
+    Public Sub RetrieveData(ByVal Address As String, ByVal Port As String, ByVal ScaleNo As Int16)
         Dim Comm As New communicator(Address, Port)
-        Dim DataList As List(Of Byte()) = Comm.InializeComm(Main.ScaleType.Avery)
+        Dim DataList As New List(Of Byte())
+        DataList = Comm.InializeComm(Main.ScaleType.Avery)
+        'If IsNothing(DataList) = False Then
+        '    For i As Integer = 0 To DataList.Count - 1
 
+        '    Next
+        'End If
     End Sub
 End Class

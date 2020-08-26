@@ -12,6 +12,7 @@ Public Class communicator
         Try
             TCPClient.NoDelay = False
             TCPClient.Connect(System.Net.IPAddress.Parse(Address), Port)
+            TCPClient.ReceiveBufferSize = 599
             NetworkStream = TCPClient.GetStream
 
             Return RetrieveData(ScaleType)
@@ -28,25 +29,30 @@ Public Class communicator
         Dim StopByteSize As Integer = Avery.RetrieveStopByte
         Dim CMD As Byte()
         Dim ReadData As String = ""
+        Dim DataCount As Integer = 0
         Try
-            Do Until InStream.Length = StopByteSize
+            Do Until DataCount = StopByteSize
                 If NetworkStream.CanWrite And NetworkStream.CanRead Then
                     CMD = Avery.RetrievePluByte(Count)
-                    ReDim Preserve InStream(TCPClient.ReceiveBufferSize)
+                    Array.Clear(InStream, 0, TCPClient.ReceiveBufferSize)
                     NetworkStream.Write(CMD, 0, CMD.Length)
 
                     NetworkStream.Read(InStream, 0, TCPClient.ReceiveBufferSize)
 
                     Count += 1
+
                     ReadData = Encoding.ASCII.GetString(InStream)
                     ReadData = ReadData.Replace(ChrW(0), "")
-                    If ReadData.Length <> 0 Then
-                        ReDim Preserve InStream(ReadData.Length)
-                    Else
-                        Return Datalist
-                    End If
-                    If InStream.Length <> StopByteSize Then
-                        Datalist.Add(InStream)
+                    DataCount = ReadData.Length
+                    'If ReadData.Length <> 0 Then
+                    '    ReDim Preserve InStream(ReadData.Length)
+                    'Else
+                    '    Return Datalist
+                    'End If
+                    If DataCount <> StopByteSize Then
+                        Dim ActualData(599) As Byte
+                        Array.Copy(InStream, ActualData, TCPClient.ReceiveBufferSize)
+                        Datalist.Add(ActualData)
                     End If
                 End If
             Loop
