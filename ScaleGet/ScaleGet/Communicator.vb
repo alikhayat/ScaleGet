@@ -3,15 +3,16 @@ Imports System.Text
 Public Class communicator
     Dim TCPClient As New System.Net.Sockets.TcpClient()
     Dim NetworkStream As NetworkStream
-    Dim Address, Port As String
-    Public Sub New(ByVal _Address As String, ByVal _Port As String)
+    Dim Address As System.Net.IPAddress
+    Dim Port As String
+    Public Sub New(ByVal _Address As System.Net.IPAddress, ByVal _Port As String)
         Address = _Address
         Port = _Port
     End Sub
     Public Function InializeComm(ByVal ScaleType As Main.ScaleType) As List(Of Byte())
         Try
             TCPClient.NoDelay = False
-            TCPClient.Connect(System.Net.IPAddress.Parse(Address), Port)
+            TCPClient.Connect(Address, Port)
             TCPClient.ReceiveBufferSize = 599
             NetworkStream = TCPClient.GetStream
 
@@ -44,11 +45,7 @@ Public Class communicator
                     ReadData = Encoding.ASCII.GetString(InStream)
                     ReadData = ReadData.Replace(ChrW(0), "")
                     DataCount = ReadData.Length
-                    'If ReadData.Length <> 0 Then
-                    '    ReDim Preserve InStream(ReadData.Length)
-                    'Else
-                    '    Return Datalist
-                    'End If
+                   
                     If DataCount <> StopByteSize Then
                         Dim ActualData(599) As Byte
                         Array.Copy(InStream, ActualData, TCPClient.ReceiveBufferSize)
